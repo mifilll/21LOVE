@@ -16,5 +16,86 @@
     </div>
 
     <script src="script.js"></script>
+    <button id="giftBtn" class="button" onclick="openGift()">Открыть подарок 🎁</button>
 </body>
+    <script>
+// --- ДАТА НАЧАЛА ОТНОШЕНИЙ ---
+const startDate = new Date("2021-12-21");
+
+// --- КАЛЬКУЛЯТОР ДНЕЙ ---
+function updateDaysTogether() {
+    const now = new Date();
+    const diff = now - startDate;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    document.getElementById("days").innerText = days;
+}
+updateDaysTogether();
+
+// --- СПИСОК ПОДАРКОВ / ЗАДАНИЙ ---
+const gifts = [
+    "Сказать ей 10 комплиментов",
+    "Приготовить ей что-то вкусное",
+    "Отправить ей голосовое о том, как сильно ты её любишь",
+    "Провести вечер только вдвоём, без телефона",
+    "Купить её любимую вкусняшку",
+    "Написать ей письмо",
+    "Сделать массаж",
+    "Посмотреть вместе фильм, который она выберет",
+    "Подарить ей 15 минут полного внимания",
+    "Выбрать песню, которая напоминает о ней, и отправить"
+];
+
+// --- ЛОГИКА ОТКРЫТИЯ ПОДАРКА РАЗ В 24 ЧАСА ---
+function openGift() {
+    const lastOpen = localStorage.getItem("lastGift");
+
+    if (lastOpen) {
+        const diff = Date.now() - Number(lastOpen);
+        const hours = diff / 3600000;
+
+        if (hours < 24) {
+            const remaining = Math.ceil(24 - hours);
+            alert("Подарок можно открыть через " + remaining + " часов!");
+            return;
+        }
+    }
+
+    // Выбираем случайный подарок
+    const gift = gifts[Math.floor(Math.random() * gifts.length)];
+
+    alert("🎁 Подарок для неё: \n\n" + gift);
+
+    localStorage.setItem("lastGift", Date.now());
+}
+
+// Обновление статуса кнопки
+function updateGiftButton() {
+    const lastOpen = localStorage.getItem("lastGift");
+    const btn = document.getElementById("giftBtn");
+
+    if (!lastOpen) {
+        btn.innerText = "Открыть подарок 🎁";
+        btn.disabled = false;
+        return;
+    }
+
+    const diff = Date.now() - Number(lastOpen);
+    const hours = diff / 3600000;
+
+    if (hours >= 24) {
+        btn.innerText = "Открыть подарок 🎁";
+        btn.disabled = false;
+    } else {
+        const remaining = 24 - hours;
+        const h = Math.floor(remaining);
+        const m = Math.floor((remaining - h) * 60);
+
+        btn.innerText = Следующий подарок через ${h}ч ${m}м;
+        btn.disabled = true;
+    }
+}
+
+setInterval(updateGiftButton, 1000);
+updateGiftButton();
+</script>
 </html>
